@@ -1,0 +1,10 @@
+#!/bin/bash
+
+## uncompress large file
+
+gunzip -k data/*gz
+
+
+#I dont think I need this
+## remove ribbity repos
+#rm -rf site*
