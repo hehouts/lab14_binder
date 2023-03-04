@@ -4,5 +4,6 @@ channels:
   - bioconda
   - defaults
 dependencies:
+  - python >= 3.8
   - sourmash-minimal
   - r-tidyverse
