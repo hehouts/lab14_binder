@@ -339,6 +339,7 @@ sourmash search ecoli-sample.sig ecoli-genome.sig --containment
 
 ```
 
+
 lets try this with more reference ecoli genomes
 ```
 mkdir ~/sourmash/ecoli_many_sigs
@@ -349,29 +350,33 @@ rm eschericia-sigs.tar.gz
 
 cd ~/sourmash/
 sourmash index ecolidb ecoli_many_sigs/*.sig
-sourmash search ecoli-genome.sig ecolidb.sbt.zip -n 20
+sourmash search ecoli-genome.sig ecolidb.sbt.zip -n 20 -o ecoli_compare_table.csv
 ```
 The point the lesson today is not for you to be able to make sense of this output. The point is four you to understand that there are softwares that you might want to use, that require the use of a CLI (command line interface). May of these tools can output a table that we can use in R!
 
 Run
 ```
 sourmash compare ecoli_many_sigs/*.sig --csv ecoli.cmp.csv
-```
-```{r}
-library(here)
-here()
-```
+````
 
 
-
+Now we export our csv from the binder: 
+check the box of the `ecoli.cmp.csv` and the `ecoli_compare_table.csv`, click settings, and select export. This will download to your downloads folder, and then you can drag it into your lab_14 folder. 
 ```{r}
 library(tidyverse)
-
 ```
 
 ```{r}
+compare_table <- read_csv("ecoli_compare_table.csv")
 
+compare_table %>% 
+  ggplot(aes(x = name, y = ani))+
+  geom_col()
+```
 
+Lets be clear... this is an ugly plot. Here is a neat way to visualize 3 dimensional data: a heatmap
+
+```{r}
 sourmash_comp_matrix <- read.csv("ecoli.cmp.csv")
 
 # Label the rows
@@ -379,17 +384,35 @@ rownames(sourmash_comp_matrix) <- colnames(sourmash_comp_matrix)
 
 # Transform for plotting
 sourmash_comp_matrix <- as.matrix(sourmash_comp_matrix)
-```
 
-```{r}
 sourmash_comp_table <- read_csv("ecoli.cmp.csv")
 sourmash_comp_table_dot <- read_csv("ecoli.cmp.csv")
 ```
 
+### Make an unclustered heatmap
+```{r heatmap}
+heatmap(sourmash_comp_matrix, Colv=F, scale='none')
+```
 
-Now we export our csv from the binder: 
-check the box of the `ecoli.cmp.csv`, 
 
+With some statistics research, we can figure our other ways to represent our data:
+### Make an MDS plot
+
+```{r mds}
+fit <- dist(sourmash_comp_matrix)
+fit <- cmdscale(fit)
+x <- fit[, 1]
+y <- fit[, 2]
+plot(fit[ , 1], fit[ , 2], xlab = "Dimension 1", ylab = "Dimension 2")
+```
+
+### Make a tSNE plot
+```{r tSNE}
+library(Rtsne)
+tsne_model <- Rtsne(sourmash_comp_matrix, check_duplicates=FALSE, pca=TRUE, perplexity=5, theta=0.5, dims=2)
+d_tsne = as.data.frame(tsne_model$Y) 
+plot(d_tsne$V1, d_tsne$V2)
+```
 
 
 
