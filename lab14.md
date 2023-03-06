@@ -1,7 +1,7 @@
 ---
 title: "Generating Data: Intro to Unix"
 author: "Hannah E. Houts"
-date: "`r Sys.Date()`"
+date: "2023-03-06"
 output:
   html_document: 
     theme: spacelab
@@ -385,11 +385,24 @@ Reminder: The point the lesson today is not for you to be able to make sense of 
 
 Now we export our csv from the binder: 
 check the box of the `ecoli.cmp.csv` and the `ecoli_compare_table.csv`, click settings, and select export. This will download to your downloads folder, and then you can drag it into your lab_14 folder. 
-```{r}
+
+```r
 library(tidyverse)
 ```
 
-```{r}
+```
+## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+## ✔ ggplot2 3.4.0      ✔ purrr   1.0.0 
+## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
+## ✔ tidyr   1.2.1      ✔ stringr 1.5.0 
+## ✔ readr   2.1.3      ✔ forcats 0.5.2 
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+```
+
+
+```r
 compare_table <- read_csv("ecoli_compare_table.csv")
 
 compare_table %>% 
@@ -399,7 +412,8 @@ compare_table %>%
 
 Lets be clear... this is an ugly plot. Here is a neat way to visualize 3 dimensional data: a heatmap
 
-```{r}
+
+```r
 sourmash_comp_matrix <- read.csv("ecoli.cmp.csv")
 
 # Label the rows
@@ -413,7 +427,8 @@ sourmash_comp_table_dot <- read_csv("ecoli.cmp.csv")
 ```
 
 ### Make an unclustered heatmap
-```{r heatmap}
+
+```r
 heatmap(sourmash_comp_matrix, Colv=F, scale='none')
 ```
 
@@ -421,7 +436,8 @@ heatmap(sourmash_comp_matrix, Colv=F, scale='none')
 With some statistics research, we can figure our other ways to represent our data:
 ### Make an MDS plot
 
-```{r mds}
+
+```r
 fit <- dist(sourmash_comp_matrix)
 fit <- cmdscale(fit)
 x <- fit[, 1]
@@ -430,7 +446,8 @@ plot(fit[ , 1], fit[ , 2], xlab = "Dimension 1", ylab = "Dimension 2")
 ```
 
 ### Make a tSNE plot
-```{r tSNE}
+
+```r
 library(Rtsne)
 tsne_model <- Rtsne(sourmash_comp_matrix, check_duplicates=FALSE, pca=TRUE, perplexity=5, theta=0.5, dims=2)
 d_tsne = as.data.frame(tsne_model$Y) 
