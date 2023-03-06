@@ -276,6 +276,12 @@ cd company_secrets/lie/deep/within/the/caverns/of/unix/
 
 You can see that we've created a bit of a monster directory structure...
 
+you can visualize this with the tree function: 
+```
+cd ~/hannah_unix_cafe/
+tree -L 6
+```
+
 This nicely hints at the power of the shell - you can do certain things (in this case, create a nested hierarchy of directories) much more easily in the shell. But that power cuts both ways - you can also mess things up more easily in the shell!
 
 
@@ -384,7 +390,7 @@ Reminder: The point the lesson today is not for you to be able to make sense of 
 
 
 Now we export our csv from the binder: 
-check the box of the `ecoli.cmp.csv` and the `ecoli_compare_table.csv`, click settings, and select export. This will download to your downloads folder, and then you can drag it into your lab_14 folder. 
+check the box of the `ecoli.cmp.csv`, click more settings, and select export. This will download to your downloads folder, and then you can drag it into your lab_14 folder. repeat for `ecoli_compare_table.csv`, the binder requires that you download one at a time!
 ```{r}
 library(tidyverse)
 ```
