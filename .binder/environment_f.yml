@@ -1,0 +1,9 @@
+name: lab14
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - sourmash
+  - r-tidyverse
+prefix: /Users/hehouts/opt/anaconda3/envs/lab14
