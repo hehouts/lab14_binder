@@ -1,5 +1,5 @@
 ---
-title: "Generating Data: Intro to Unix"
+title: "Generating Data: Intro to the Unix Shell"
 author: "Hannah E. Houts"
 date: "`r Sys.Date()`"
 output:
@@ -11,7 +11,7 @@ output:
   pdf_document:
     toc: yes
 ---
-
+# Generating Data: Intro to the Unix Shell
 
 ## Learning Goals
 *At the end of this exercise, you will be able to:* 
@@ -44,8 +44,9 @@ Click on the "launch binder" link at the bottom of [this page] (https://github.c
 Wait ~1-3 minutes. You should see an RStudio Server window ...sooner or later!
 
 
-## What is the shell and what is the terminal?
-The **shell** is a computer program that uses a command line interface (CLI) to give commands made by your keyboard to your operating system. Most people are used to interacting with a graphic user interface (GUI), where you can use a combination of your mouse and keyboard to carry out commands on your computer. We can use the shell through a **terminal** program. 
+## What is unix, the shell and what is the terminal?
+
+Unix is technically an operating system, like Windows10 or MacOS. Most people are used to interacting with a graphic user interface (GUI), where you can use a combination of your mouse and keyboard to carry out commands on your computer. We can use the shell through a **terminal** program. The **shell** is a computer program that uses a command line interface (CLI) to give commands made by your keyboard to your operating system. Linux and Mac operating systems use a unix-like shell (bash and zsh, respectively), meaning they have similar commands, while windows uses a different language.
 
 Everything we can do using our computer GUI, we can do in the shell. We can open programs, run analyses, create documents, delete files and create folders. We should note that _folders_ are called **directories** at the command line. For all intents and purposes they can be used interchangeably but if you'd like more information please see "The folder metaphor" section of [Wikipedia](https://en.wikipedia.org/wiki/Directory_%28computing%29#Folder_metaphor).
 
@@ -69,16 +70,8 @@ we can clear that code from our screen with
 clear
 ```
 
-Let's take a look around. First, we can use the **print working directory** command see what directory we are currently located in.
-
-```
-pwd
-```
-
-This gives us the **absolute path** to the directory where we are located. An absolute path shows the complete series of directories you need to locate either a directory or a file starting from the root directory of your computer.
-
-
-We can also look at the contents of the directory by using the `ls` command:
+Let's take a look around.
+We can look at the contents of the current directory by using the `ls` command:
 
 ```
 ls
@@ -94,6 +87,14 @@ To switch the directory we are located in, we need to change directories using t
 cd hannahs_unix_cafe
 ```
 
+We can confirm that we have moved with the **print working directory** command, which shows what directory we are currently located in.
+
+```
+pwd
+```
+
+This gives us the **absolute path** to the directory where we are located. An absolute path shows the complete series of directories you need to locate either a directory or a file starting from the root directory of your computer.
+
 Let's have a look around.
 
 ```
@@ -101,14 +102,14 @@ ls
 ```
 (ls stands for list. I remember it with `list stuff`)
 
+
 However, this directory contains more than the eye can see! To show hidden files we can use the `-a` option.
 
 ```
 ls -a
 ```
 
-What did you find? discuss with your neighbor.
-
+What did you find? 
 
 
 Using options with our commands allows us to do a lot! But how did we know to add `-a` after ls? Most commands offer a `--help`. Let's look at the available options that `ls` has:
@@ -143,7 +144,7 @@ This combination of options will _list_ _all_ the contents of the directory, in 
 ## Navigation
   Now we have a fairly good concept of navigating around our computers and seeing what is located in the directory we are. But some of the beauty of the shell is that we can execute activities in locations that we are not currently in. To do this we can either use an absolute path or a relative path. A **relative path** is the path to another directory from the the one you are currently in. 
 
-check out the  `hannahs_unix_cafe` directory
+Again, check out the  `hannahs_unix_cafe` directory
 
 ```
 ls
@@ -201,7 +202,7 @@ ls menu/fall*
 ```
 
 ```
-ls menu *
+ls menu/*
 ```
 
 We are quite used to moving, copying and deleting files using a GUI. All of these functions can be carried out at the command line with the following commands: 
@@ -210,12 +211,12 @@ Copy files with the `cp` command by specifying a file to copy and the location o
 
 ```
 cd menu
-ls menu
+ls
 ```
 
 ```
 cd fall
-ls fall
+ls
 ```
 
 ```
@@ -226,14 +227,13 @@ ls
 The syntax for the copy command is `cp <source_file> <destination_file>`. Using this syntax we can copy files to other directories as well:
 
 ```
-cp year_round_offerings.txt ../spring
+cp year_round_offerings.txt ../spring/year_round_offerings.txt
 ```
 
-If we navigate to the spring directory and list the files that are in it we will see the `year_round_offerings.txt` file has been copied to the `spring/` directory.
+If we list the files that are in the spring directory, we will see the `year_round_offerings.txt` file has been copied to the `spring/` directory.
 
 ```
-cd ../spring
-ls -l
+ls -l../spring
 ```
 
 #### Practice:
@@ -325,41 +325,52 @@ Here we will download 4 files:
 
 # download a metagenome (comes in two parts)
 ```
+
+# download a metagenome (comes in two parts)
 curl -JLO ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR885/005/SRR8859675/SRR8859675_1.fastq.gz
 curl -JLO ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR885/005/SRR8859675/SRR8859675_2.fastq.gz
-```
-
 
 # downloads a GTDB genomic representatives database, containing ~65,000 genomes
-```
 curl -JLO https://osf.io/3a6gn/download
-```
 
 # taxonomy table for database
-```
 curl -JLO https://osf.io/v3zmg/download
+
+ls -lh
 ```
 
-now, we are going to run a "bash script", a set of bash commands that are stored in a file, usually ending with `.sh`
+Once you have those downloads going, let's chat..
+
+What we are downloading is a metagenome from an Lemonade Creek, Yellowstone National Park (YNP). This environment is hot, acidic, and arsenic. A metagenome is the result of sequencing the DNA of the environment, in this case the hot spring water. This is a very common type of data for studying microbiomes. 
+
+learn more about the data [here](https://bhattacharyalab.com/extremophily-research-areas/). 
+learn more about the environment [here](https://www.nationalparkstraveler.org/2009/03/scientists-hot-water-yellowstone-national-park-good-cause)
+
+*How are the downloads going? you should have 4 files*
+
+Now, we are going to run a "bash script", a set of bash commands that are stored in a file, usually ending with `.sh`
 ```
 cd ~/sourmash
 bash sourmash.sh
+ls *.csv
 ```
+This will take a about 6 minutes. 
+*make sure this is running while I start talking again :)*
 
-This will take a minute. 
+So we have this type of data: mixed DNA from an environment. What questions you might want to ask about this data? Usually "Who is there?" and "Who is there in what proportions" is a solid start. 
 
-Sourmash is a software developed in my lab, that has a CLI (command line interface). It analyzes metagenomes, which is a type of sample used for studying microbiomes. Sourmash can create output files that we could visualize in R.
-It is pre-installed in this binder instance.
+Sourmash is a software developed in my lab, that has a CLI (command line interface). It analyzes these metagenomes, and (in this script) provides us with a few microbes found in the sample, and their relative abundance. Sourmash can create a csv file with this information, and we can visualize it in R.
+(Sourmash is pre-installed in this binder instance.)
 
 
+*check on your terminal- is it still running?*
 While it's running, lets use the rstudio file browser to open up sourmash.sh and check it out.
-
 
 
 Reminder: The point the lesson today is not for you to be able to make sense of this output. The point is four you to understand that there is software that you might want to use, that require the use of a CLI (command line interface). May of these tools can output a table that we can use in R!
 
-
-Now we export our csv from the binder: check the box of the `hotspring_microbiome.csv`, click more settings, and select export. This will download to your downloads folder, and then you can drag it into your lab_14 folder.
+### IMPORTANT: Export from binder
+Now we export our csv from the binder: check the box of the `hotspring_microbiome.csv`, click more settings, and select export. This will download to your downloads folder, and then you can drag it into your lab_14/sourmash/ folder.
 
 Lets visualize this table with our tidyverse skills:
 
@@ -385,7 +396,7 @@ hotspring_microbiome
 ```
 
 #### Take it further! 
-What is the most abundant bacterial species based on average abundance?
+1. What is the most abundant bacterial species based on average abundance?
 ```{r}
 hotspring_microbiome %>% 
   relocate(query_name, name, average_abund, average_containment_ani) %>% 
@@ -393,5 +404,35 @@ hotspring_microbiome %>%
   top_n(1, average_abund) %>% 
   select(name)
 ```
-Look up this species on wikipedia. are you surprised to find this in a hot spring?
+2. Make a bar plot of `name` and `average_abund`. 
+```{r}
+theme_set(theme_minimal())
+```
 
+```{r}
+p<- hotspring_microbiome %>% 
+  relocate(query_name, name, average_abund, average_containment_ani) %>% 
+  arrange(desc(average_abund))
+```
+
+```{r}
+p %>% 
+  ggplot(aes(x = name, y = average_abund, fill = name))+
+  geom_col()+
+  theme(legend.position = "none")+
+  coord_flip()+
+  labs(title = "Abundance of Microbes in Lemonade Creek Hot Spring",
+       x = NULL,
+       y = "Average Abundance")
+
+```
+
+3. Look up this species on wikipedia. are you surprised to find this in a hot spring?
+
+## Wrap up 
+
+Use of the Unix Shell is fundamental to a wide range of advanced computing tasks, including high-performance computing. Experience with CLI (command line interfaces) will free you to use research software, and begin to create your own data that can be visualized in R with all of the incredible skills you've developed in this class. 
+
+The homework for this lesson is not coding based, but it is important! Please use the homework to reflect on everything you have learned this quarter, and how those skills might serve you in the future.  
+
+Thank you for your attention all quarter, this has been a wonderful class.
