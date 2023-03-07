@@ -1529,7 +1529,8 @@ border-radius: 0px;
 </ol>
 <p>commands: <code>pwd</code>, <code>ls</code>, <code>cd</code>,
 <code>curl</code>, <code>cat</code>, <code>cp</code>, <code>mv</code>,
-<code>rm</code>, <code>mkdir</code>, <code>rmdir</code></p>
+<code>rm</code>, <code>mkdir</code>, <code>rmdir</code>,
+<code>curl</code>, <code>bash</code></p>
 </div>
 <div id="resources" class="section level2">
 <h2>Resources</h2>
@@ -1541,6 +1542,8 @@ Carpentries: Introduction to the Command Line for Genomics</a></p></li>
 Lab: Advanced Beginner Shell</a></p></li>
 <li><p><a href="https://github.com/ngs-docs/2021-GGG298/tree/latest/Week2-UNIX_for_file_manipulation">ggg298
 lab2: UNIX_for_file_manipulation</a></p></li>
+<li><p><a href="https://sourmash.readthedocs.io/en/latest/tutorial-lemonade.html">The
+sourmash portion was adapted from this sourmash tutorial</a></p></li>
 </ul>
 </div>
 <div id="getting-started-in-binder" class="section level2">
@@ -1730,6 +1733,9 @@ your command will eventually read:</p>
 <pre><code>cd company_secrets/lie/deep/within/the/caverns/of/unix/</code></pre>
 <p>You can see that we’ve created a bit of a monster directory
 structure…</p>
+<p>you can visualize this with the tree function:</p>
+<pre><code>cd ~/hannah_unix_cafe/
+tree -L 6</code></pre>
 <p>This nicely hints at the power of the shell - you can do certain
 things (in this case, create a nested hierarchy of directories) much
 more easily in the shell. But that power cuts both ways - you can also
@@ -1751,63 +1757,47 @@ career path (see: data scientist). Though R is often used for analyzing
 biological data, many software tools are run with what is called a
 command line interface, or CLI. Everything we’ve covered today has been
 working “on the command line”</p>
-<p>Here, Im throwing a lot at you, and the goal is simply for you to see
-the power of CLI tools, not for you to be an expert genomicist by 5
+<p>Here, I’m throwing a lot at you, and the goal is simply for you to
+see the power of CLI tools, not for you to be an expert genomicist by 5
 o’clock!</p>
-<pre><code>mkdir ~/data
-cd ~/data</code></pre>
-<p>We are using <code>curl</code>, a command that downloads files from a
-web url. This is downloading the genome of an ecoli sample, and the
-reference genome for ecoli. Your can think of this as the difference
-between your genome, and the “human genome”</p>
-<pre><code>curl -L https://osf.io/ruanf/download -o ecoliMG1655_REFERENCE_GENOME.fa.gz
-curl -L https://osf.io/q472x/download -o ecoli_ref_SAMPLE_5m.fastq.gz</code></pre>
-<p>run</p>
-<pre><code>ls -lh </code></pre>
-<p>and we see that these files are pretty big, and they’re zipped. BUT
-we can use “zcat” to see them</p>
-<pre><code>zcat ecoliMG1655_REFERENCE_GENOME.fa.gz</code></pre>
-<p>ahh!!!! escape with ctrl-c</p>
-<p>now try</p>
-<pre><code>zcat ecoliMG1655_REFERENCE_GENOME.fa.gz  | head</code></pre>
-<p>look! some base pairs!</p>
+<pre><code>cd ~/sourmash/genomic_data</code></pre>
+<p>We will be using <code>curl</code>, a command that downloads files
+from a web url. Here we will download 4 files:</p>
+</div>
+<div id="download-a-metagenome-comes-in-two-parts" class="section level1">
+<h1>download a metagenome (comes in two parts)</h1>
+<pre><code>curl -JLO ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR885/005/SRR8859675/SRR8859675_1.fastq.gz
+curl -JLO ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR885/005/SRR8859675/SRR8859675_2.fastq.gz</code></pre>
+</div>
+<div id="downloads-a-gtdb-genomic-representatives-database-containing-65000-genomes" class="section level1">
+<h1>downloads a GTDB genomic representatives database, containing
+~65,000 genomes</h1>
+<pre><code>curl -JLO https://osf.io/3a6gn/download</code></pre>
+</div>
+<div id="taxonomy-table-for-database" class="section level1">
+<h1>taxonomy table for database</h1>
+<pre><code>curl -JLO https://osf.io/v3zmg/download</code></pre>
+<p>now, we are going to run a “bash script”, a set of bash commands that
+are stored in a file, usually ending with <code>.sh</code></p>
+<pre><code>cd ~/sourmash
+bash sourmash.sh</code></pre>
+<p>This will take a minute.</p>
 <p>Sourmash is a software developed in my lab, that has a CLI (command
-line interface). It analyzes genomes, can can create output that we
-could visualize in R. It is installed in this binder instance.</p>
-<pre><code>mkdir ~/sourmash
-cd ~/sourmash</code></pre>
-<p>makes compressed representation of genomes (thanks to the magic of
-kmers, this only takes ~30 seconds).</p>
-<pre><code>sourmash sketch dna -p scaled=10000,k=31 ~/data/ecoli_ref*.fastq.gz -o ecoli-sample.sig
-
-sourmash sketch dna -p scaled=1000,k=31 ~/data/ecoliMG1655_REFERENCE_GENOME.fa.gz -o ecoli-genome.sig</code></pre>
-<p>compares them:</p>
-<pre><code>sourmash search ecoli-sample.sig ecoli-genome.sig --containment
-</code></pre>
-<p>this shows us that our sample and our reference genome are only about
-31% similar</p>
-<p>lets try this with more reference ecoli genomes. this will give us
-more that 1 comparison, so we will save our output in a csv file</p>
-<pre><code>mkdir ~/sourmash/ecoli_many_sigs
-cd ~/sourmash/ecoli_many_sigs
-curl -O -L https://github.com/sourmash-bio/sourmash/raw/latest/data/eschericia-sigs.tar.gz
-tar xzf eschericia-sigs.tar.gz
-rm eschericia-sigs.tar.gz
-
-cd ~/sourmash/
-sourmash index ecolidb ecoli_many_sigs/*.sig
-sourmash search ecoli-genome.sig ecolidb.sbt.zip -n 20 -o ecoli_compare_table.csv
-sourmash compare ecoli_many_sigs/*.sig --csv ecoli.cmp.csv
-</code></pre>
+line interface). It analyzes metagenomes, which is a type of sample used
+for studying microbiomes. Sourmash can create output files that we could
+visualize in R. It is pre-installed in this binder instance.</p>
+<p>While it’s running, lets use the rstudio file browser to open up
+sourmash.sh and check it out.</p>
 <p>Reminder: The point the lesson today is not for you to be able to
 make sense of this output. The point is four you to understand that
-there are softwares that you might want to use, that require the use of
-a CLI (command line interface). May of these tools can output a table
-that we can use in R!</p>
+there is software that you might want to use, that require the use of a
+CLI (command line interface). May of these tools can output a table that
+we can use in R!</p>
 <p>Now we export our csv from the binder: check the box of the
-<code>ecoli.cmp.csv</code> and the <code>ecoli_compare_table.csv</code>,
-click settings, and select export. This will download to your downloads
-folder, and then you can drag it into your lab_14 folder.</p>
+<code>hotspring_microbiome.csv</code>, click more settings, and select
+export. This will download to your downloads folder, and then you can
+drag it into your lab_14 folder.</p>
+<p>Lets visualize this table with our tidyverse skills:</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
 ## ✔ ggplot2 3.4.0      ✔ purrr   1.0.0 
@@ -1817,40 +1807,75 @@ folder, and then you can drag it into your lab_14 folder.</p>
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>compare_table &lt;- read_csv(&quot;ecoli_compare_table.csv&quot;)
-
-compare_table %&gt;% 
-  ggplot(aes(x = name, y = ani))+
-  geom_col()</code></pre>
-<p>Lets be clear… this is an ugly plot. Here is a neat way to visualize
-3 dimensional data: a heatmap</p>
-<pre class="r"><code>sourmash_comp_matrix &lt;- read.csv(&quot;ecoli.cmp.csv&quot;)
-
-# Label the rows
-rownames(sourmash_comp_matrix) &lt;- colnames(sourmash_comp_matrix)
-
-# Transform for plotting
-sourmash_comp_matrix &lt;- as.matrix(sourmash_comp_matrix)
-
-sourmash_comp_table &lt;- read_csv(&quot;ecoli.cmp.csv&quot;)
-sourmash_comp_table_dot &lt;- read_csv(&quot;ecoli.cmp.csv&quot;)</code></pre>
-<div id="make-an-unclustered-heatmap" class="section level3">
-<h3>Make an unclustered heatmap</h3>
-<pre class="r"><code>heatmap(sourmash_comp_matrix, Colv=F, scale=&#39;none&#39;)</code></pre>
-<p>With some statistics research, we can figure our other ways to
-represent our data: ### Make an MDS plot</p>
-<pre class="r"><code>fit &lt;- dist(sourmash_comp_matrix)
-fit &lt;- cmdscale(fit)
-x &lt;- fit[, 1]
-y &lt;- fit[, 2]
-plot(fit[ , 1], fit[ , 2], xlab = &quot;Dimension 1&quot;, ylab = &quot;Dimension 2&quot;)</code></pre>
-</div>
-<div id="make-a-tsne-plot" class="section level3">
-<h3>Make a tSNE plot</h3>
-<pre class="r"><code>library(Rtsne)
-tsne_model &lt;- Rtsne(sourmash_comp_matrix, check_duplicates=FALSE, pca=TRUE, perplexity=5, theta=0.5, dims=2)
-d_tsne = as.data.frame(tsne_model$Y) 
-plot(d_tsne$V1, d_tsne$V2)</code></pre>
+<pre class="r"><code>hotspring_microbiome &lt;- read_csv(&quot;sourmash/hotspring_microbiome.csv&quot;)</code></pre>
+<pre><code>## Rows: 22 Columns: 32
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr  (7): filename, name, md5, query_filename, query_name, query_md5, moltype
+## dbl (23): intersect_bp, f_orig_query, f_match, f_unique_to_query, f_unique_w...
+## lgl  (2): query_abundance, potential_false_negative
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>names(hotspring_microbiome)</code></pre>
+<pre><code>##  [1] &quot;intersect_bp&quot;             &quot;f_orig_query&quot;            
+##  [3] &quot;f_match&quot;                  &quot;f_unique_to_query&quot;       
+##  [5] &quot;f_unique_weighted&quot;        &quot;average_abund&quot;           
+##  [7] &quot;median_abund&quot;             &quot;std_abund&quot;               
+##  [9] &quot;filename&quot;                 &quot;name&quot;                    
+## [11] &quot;md5&quot;                      &quot;f_match_orig&quot;            
+## [13] &quot;unique_intersect_bp&quot;      &quot;gather_result_rank&quot;      
+## [15] &quot;remaining_bp&quot;             &quot;query_filename&quot;          
+## [17] &quot;query_name&quot;               &quot;query_md5&quot;               
+## [19] &quot;query_bp&quot;                 &quot;ksize&quot;                   
+## [21] &quot;moltype&quot;                  &quot;scaled&quot;                  
+## [23] &quot;query_n_hashes&quot;           &quot;query_abundance&quot;         
+## [25] &quot;query_containment_ani&quot;    &quot;match_containment_ani&quot;   
+## [27] &quot;average_containment_ani&quot;  &quot;max_containment_ani&quot;     
+## [29] &quot;potential_false_negative&quot; &quot;n_unique_weighted_found&quot; 
+## [31] &quot;sum_weighted_found&quot;       &quot;total_weighted_hashes&quot;</code></pre>
+<pre class="r"><code>hotspring_microbiome &lt;- hotspring_microbiome %&gt;% 
+  relocate(query_name, name, average_abund, average_containment_ani) %&gt;% 
+  arrange(desc(average_abund))</code></pre>
+<pre class="r"><code>hotspring_microbiome &lt;- hotspring_microbiome %&gt;% 
+  relocate(query_name, name, average_abund, average_containment_ani) %&gt;% 
+  arrange(desc(average_abund))
+hotspring_microbiome</code></pre>
+<pre><code>## # A tibble: 22 × 32
+##    query…¹ name  avera…² avera…³ inter…⁴ f_ori…⁵ f_match f_uni…⁶ f_uni…⁷ media…⁸
+##    &lt;chr&gt;   &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+##  1 SRR885… GCF_…   57.4    0.856  201000 6.28e-4  0.0864 6.22e-4 1.51e-2      60
+##  2 SRR885… GCA_…   28.3    0.861  232000 7.25e-4  0.0690 4.81e-4 5.77e-3      29
+##  3 SRR885… GCF_…   22.9    0.863  252000 7.88e-4  0.0900 6.41e-4 6.21e-3       9
+##  4 SRR885… GCF_…   15.2    0.856  218000 6.81e-4  0.0507 4.47e-4 2.87e-3       2
+##  5 SRR885… GCF_…   14.7    0.824   64000 2.00e-4  0.0210 1.66e-4 1.03e-3       5
+##  6 SRR885… GCF_…   13.7    0.844  143000 4.47e-4  0.0249 2.13e-4 1.24e-3       3
+##  7 SRR885… GCA_…    6.61   0.888  602000 1.88e-3  0.273  1.88e-3 5.27e-3       1
+##  8 SRR885… GCA_…    3.16   0.886  622000 1.94e-3  0.233  1.94e-3 2.60e-3       3
+##  9 SRR885… GCA_…    2.60   0.865  352000 1.10e-3  0.0932 1.10e-3 1.21e-3       2
+## 10 SRR885… GCA_…    2.5    0.837  119000 3.72e-4  0.0270 2.69e-4 2.85e-4       2
+## # … with 12 more rows, 22 more variables: std_abund &lt;dbl&gt;, filename &lt;chr&gt;,
+## #   md5 &lt;chr&gt;, f_match_orig &lt;dbl&gt;, unique_intersect_bp &lt;dbl&gt;,
+## #   gather_result_rank &lt;dbl&gt;, remaining_bp &lt;dbl&gt;, query_filename &lt;chr&gt;,
+## #   query_md5 &lt;chr&gt;, query_bp &lt;dbl&gt;, ksize &lt;dbl&gt;, moltype &lt;chr&gt;, scaled &lt;dbl&gt;,
+## #   query_n_hashes &lt;dbl&gt;, query_abundance &lt;lgl&gt;, query_containment_ani &lt;dbl&gt;,
+## #   match_containment_ani &lt;dbl&gt;, max_containment_ani &lt;dbl&gt;,
+## #   potential_false_negative &lt;lgl&gt;, n_unique_weighted_found &lt;dbl&gt;, …</code></pre>
+<div id="take-it-further" class="section level4">
+<h4>Take it further!</h4>
+<p>What is the most abundant bacterial species based on average
+abundance?</p>
+<pre class="r"><code>hotspring_microbiome %&gt;% 
+  relocate(query_name, name, average_abund, average_containment_ani) %&gt;% 
+  arrange(desc(average_abund)) %&gt;% 
+  top_n(1, average_abund) %&gt;% 
+  select(name)</code></pre>
+<pre><code>## # A tibble: 1 × 1
+##   name                                                                     
+##   &lt;chr&gt;                                                                    
+## 1 GCF_006265245.1 Prosthecochloris vibrioformis strain=DSM 260, ASM626524v1</code></pre>
+<p>Look up this species on wikipedia. are you surprised to find this in
+a hot spring?</p>
 </div>
 </div>
 
