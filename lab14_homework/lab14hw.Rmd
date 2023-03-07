@@ -41,6 +41,11 @@ Answer the following questions in RMarkdown. Please embed all of your code and p
 7. Now that you have (almost!) completed this course, do you plan to persue further data or computer science skills? What do you plan to do?
 
 
+8. How important was working with a partner to your success in this class? If this class were transitioned to an online format, how do you think that would affect your understanding?
+
+
+9. Did you complete the class evaluation? Please complete the class evaluation using the link provided in the announcements. Your feedback is very important and we appreciate your time.
+
 
 ## Push your final code to GitHub!
 Please be sure that you check the `keep md` file in the knit preferences. 
