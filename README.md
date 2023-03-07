@@ -4,8 +4,8 @@
 **If after 2 minutes an rStudio interface does not open, try launching the binder a second time in another tab (this almost always works).** 
 
 ## Homework:
-You only need to submit the `lab14_hw.Rmd` for credit. 
+You only need to submit the `lab14_hw.Rmd`, in the `lab14_homework/` folder for credit. 
 At the top of the homework, there is a link back to this binder if you want to reference it in the future. 
 
-You can add the homework directly to your class repo by dragging `lab14_hw.Rmd` to your class repository. Please knit with `.md` when you are finished.
+You can add the homework directly to your class repo by dragging the `lab14_homework/` folder into your class repository. Please knit with `.md` when you are finished.
 
